@@ -60,92 +60,76 @@ def analyze_economic_factor(correlations):
 
 def create_comparison_visualizations(results, save_path="output/visualisations/"):
     """
-    Crée des graphiques comparatifs
+    Crée des graphiques comparatifs - VERSION CORRIGÉE
     """
     import matplotlib.pyplot as plt
     import os
     os.makedirs(save_path, exist_ok=True)
     
-    if results['kalman']['success'] and results['pca']['success']:
-        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    try:
+        if results['kalman']['success'] and results['pca']['success']:
+            fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+            
+            # Facteurs Kalman Smoothed
+            kalman_factors = results['kalman']['factors_smooth']
+            axes[0,0].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', linewidth=2)
+            axes[0,0].set_title('Facteur 1 - Kalman/DFM (Smoothed)', fontweight='bold')
+            axes[0,0].grid(True, alpha=0.3)
+            
+            # Facteurs Kalman Filtered vs Smoothed
+            kalman_filtered = results['kalman']['factors_filter']
+            axes[0,1].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', label='Smoothed', linewidth=2)
+            axes[0,1].plot(kalman_filtered.index, kalman_filtered.iloc[:, 0], 'r--', label='Filtered', linewidth=2)
+            axes[0,1].set_title('Kalman: Filtered vs Smoothed', fontweight='bold')
+            axes[0,1].legend()
+            axes[0,1].grid(True, alpha=0.3)
+            
+            # Facteurs ACP
+            pca_factors = results['pca']['factors']
+            axes[1,0].plot(pca_factors.index, pca_factors.iloc[:, 0], 'g-', linewidth=2)
+            axes[1,0].set_title('Facteur 1 - ACP', fontweight='bold')
+            axes[1,0].grid(True, alpha=0.3)
+            
+            # Comparaison directe
+            axes[1,1].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', label='Kalman/DFM', linewidth=2)
+            axes[1,1].plot(pca_factors.index, pca_factors.iloc[:, 0], 'g-', label='ACP', linewidth=2)
+            axes[1,1].set_title('Comparaison Kalman vs ACP', fontweight='bold')
+            axes[1,1].legend()
+            axes[1,1].grid(True, alpha=0.3)
+            
+            plt.tight_layout()
+            plt.savefig(f"{save_path}comparison_kalman_pca.png", dpi=300, bbox_inches='tight')
+            plt.show()
+            
+            print(f"✓ Graphiques comparatifs sauvegardés: {save_path}comparison_kalman_pca.png")
         
-        # Facteurs Kalman Smoothed
-        kalman_factors = results['kalman']['factors_smooth']
-        axes[0,0].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', linewidth=2)
-        axes[0,0].set_title('Facteur 1 - Kalman/DFM (Smoothed)', fontweight='bold')
-        axes[0,0].grid(True, alpha=0.3)
-        
-        # Facteurs Kalman Filtered vs Smoothed
-        kalman_filtered = results['kalman']['factors_filter']
-        axes[0,1].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', label='Smoothed', linewidth=2)
-        axes[0,1].plot(kalman_filtered.index, kalman_filtered.iloc[:, 0], 'r--', label='Filtered', linewidth=2)
-        axes[0,1].set_title('Kalman: Filtered vs Smoothed', fontweight='bold')
-        axes[0,1].legend()
-        axes[0,1].grid(True, alpha=0.3)
-        
-        # Facteurs ACP
-        pca_factors = results['pca']['factors']
-        axes[1,0].plot(pca_factors.index, pca_factors.iloc[:, 0], 'g-', linewidth=2)
-        axes[1,0].set_title('Facteur 1 - ACP', fontweight='bold')
-        axes[1,0].grid(True, alpha=0.3)
-        
-        # Comparaison directe
-        axes[1,1].plot(kalman_factors.index, kalman_factors.iloc[:, 0], 'b-', label='Kalman/DFM', linewidth=2)
-        axes[1,1].plot(pca_factors.index, pca_factors.iloc[:, 0], 'g-', label='ACP', linewidth=2)
-        axes[1,1].set_title('Comparaison Kalman vs ACP', fontweight='bold')
-        axes[1,1].legend()
-        axes[1,1].grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.savefig(f"{save_path}comparison_kalman_pca.png", dpi=300, bbox_inches='tight')
-        plt.show()
-        
-        print(f"✓ Graphiques comparatifs sauvegardés: {save_path}comparison_kalman_pca.png")
-    
-    elif results['kalman']['success']:
-        kalman_factors = results['kalman']['factors_smooth']
-        plt.figure(figsize=(12, 6))
-        for i, col in enumerate(kalman_factors.columns):
-            plt.plot(kalman_factors.index, kalman_factors[col], label=col, linewidth=2)
-        plt.title('Facteurs Kalman/DFM', fontsize=14, fontweight='bold')
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-        plt.tight_layout()
-        plt.savefig(f"{save_path}factors_kalman.png", dpi=300, bbox_inches='tight')
-        plt.show()
-        
-    elif results['pca']['success']:
-        pca_factors = results['pca']['factors']
-        plt.figure(figsize=(12, 6))
-        for i, col in enumerate(pca_factors.columns):
-            plt.plot(pca_factors.index, pca_factors[col], label=col, linewidth=2)
-        plt.title('Facteurs ACP', fontsize=14, fontweight='bold')
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-        plt.tight_layout()
-        plt.savefig(f"{save_path}factors_pca.png", dpi=300, bbox_inches='tight')
-        plt.show()
-    """
-    Crée les graphiques des facteurs
-    """
-    os.makedirs(save_path, exist_ok=True)
-    
-    # Graphique évolution des facteurs
-    plt.figure(figsize=(12, 6))
-    for i, col in enumerate(factors_df.columns):
-        plt.plot(factors_df.index, factors_df[col], label=col, linewidth=2)
-    
-    plt.title('Évolution des Facteurs Extraits', fontsize=14, fontweight='bold')
-    plt.xlabel('Date')
-    plt.ylabel('Valeur du facteur')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    
-    plt.savefig(f"{save_path}factors_evolution.png", dpi=300, bbox_inches='tight')
-    plt.show()
-    
-    print(f"✓ Graphique sauvegardé: {save_path}factors_evolution.png")
+        elif results['kalman']['success']:
+            kalman_factors = results['kalman']['factors_smooth']
+            plt.figure(figsize=(12, 6))
+            for i, col in enumerate(kalman_factors.columns):
+                plt.plot(kalman_factors.index, kalman_factors[col], label=col, linewidth=2)
+            plt.title('Facteurs Kalman/DFM', fontsize=14, fontweight='bold')
+            plt.legend()
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            plt.savefig(f"{save_path}factors_kalman.png", dpi=300, bbox_inches='tight')
+            plt.show()
+            
+        elif results['pca']['success']:
+            pca_factors = results['pca']['factors']
+            plt.figure(figsize=(12, 6))
+            for i, col in enumerate(pca_factors.columns):
+                plt.plot(pca_factors.index, pca_factors[col], label=col, linewidth=2)
+            plt.title('Facteurs ACP', fontsize=14, fontweight='bold')
+            plt.legend()
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            plt.savefig(f"{save_path}factors_pca.png", dpi=300, bbox_inches='tight')
+            plt.show()
+            
+    except Exception as e:
+        print(f"❌ Erreur lors de la création des visualisations: {e}")
+        print("✓ Continuons sans les graphiques...")
 
 def save_comparison_results(results, original_df):
     """
@@ -201,36 +185,6 @@ def save_comparison_results(results, original_df):
                 f.write("RECOMMANDATION: ACP (corrélations plus fortes ou plus stable)\n")
     
     print("✓ Rapport comparatif: output/rapport_comparaison.txt")
-    """
-    Sauvegarde les résultats
-    """
-    os.makedirs("output", exist_ok=True)
-    
-    # Sauvegarder les facteurs
-    factors_df.to_csv("output/factors.csv")
-    print("✓ Facteurs sauvegardés: output/factors.csv")
-    
-    # Calculer les corrélations
-    correlations = original_df.corrwith(factors_df.iloc[:, 0]).sort_values(ascending=False)
-    
-    # Rapport simple
-    with open("output/rapport_facteurs.txt", "w") as f:
-        f.write("=== RAPPORT D'EXTRACTION DE FACTEURS ===\n\n")
-        f.write(f"Nombre de facteurs extraits: {factors_df.shape[1]}\n")
-        f.write(f"Nombre d'observations: {factors_df.shape[0]}\n")
-        f.write(f"Période: {factors_df.index[0]} à {factors_df.index[-1]}\n\n")
-        
-        f.write("CORRÉLATIONS AVEC LE PREMIER FACTEUR:\n")
-        for var, corr in correlations.items():
-            f.write(f"{var}: {corr:.3f}\n")
-        
-        f.write(f"\nSTATISTIQUES DU PREMIER FACTEUR:\n")
-        f.write(f"Moyenne: {factors_df.iloc[:, 0].mean():.3f}\n")
-        f.write(f"Écart-type: {factors_df.iloc[:, 0].std():.3f}\n")
-        f.write(f"Min: {factors_df.iloc[:, 0].min():.3f}\n")
-        f.write(f"Max: {factors_df.iloc[:, 0].max():.3f}\n")
-    
-    print("✓ Rapport sauvegardé: output/rapport_facteurs.txt")
 
 def main():
     """
@@ -320,19 +274,28 @@ def main():
     print("="*60)
     
     print("\nFichiers générés:")
-    print("- output/factors.csv")
-    print("- output/rapport_facteurs.txt") 
-    print("- output/visualisations/factors_evolution.png")
+    if results['kalman']['success']:
+        print("- output/factors_kalman_smooth.csv (facteurs lissés)")
+        print("- output/factors_kalman_filter.csv (facteurs filtrés)")
+    if results['pca']['success']:
+        print("- output/factors_pca.csv (composantes principales)")
+    print("- output/rapport_comparaison.txt (comparaison détaillée)")
+    print("- output/visualisations/comparison_kalman_pca.png (graphiques)")
     
-    print(f"\nLe facteur principal explique les variations communes de:")
-    # Les vraies variables de votre fichier
-    variables_importantes = ['Climat_Affaires', 'Taux_Chomage', 'Indice_Prix_Conso', 
-                           'Indicateur_production_indus', 'Taux_10ans_FR']
-    top_corr = correlations.head(3)
-    for var, corr in top_corr.items():
-        print(f"  • {var} (corrélation: {corr:.3f})")
+    # Résumé de la comparaison
+    if 'comparison' in results:
+        comp = results['comparison']
+        print(f"\n🔬 RÉSUMÉ DE LA COMPARAISON:")
+        print(f"   Kalman corrélation moyenne: {comp['kalman_avg_corr']:.3f}")
+        print(f"   ACP corrélation moyenne: {comp['pca_avg_corr']:.3f}")
+        print(f"   Similitude des facteurs: {comp['factor_correlation']:.3f}")
+        
+        if comp['kalman_avg_corr'] > comp['pca_avg_corr']:
+            print(f"   🏆 Kalman/DFM semble meilleur pour vos données")
+        else:
+            print(f"   🏆 ACP semble meilleur pour nos données")
     
-    return factors, df_clean
+    return results, df_clean
 
 if __name__ == "__main__":
     results, data = main()
