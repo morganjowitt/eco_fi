@@ -8,7 +8,6 @@ def load_data(file_path="data/donnees_mergees_complet.csv"):
     print("Chargement des données...")
     
     try:
-        # Essayer différents séparateurs
         for sep in [',', ';', '\t']:
             try:
                 df = pd.read_csv(file_path, sep=sep)
@@ -19,19 +18,14 @@ def load_data(file_path="data/donnees_mergees_complet.csv"):
         
         print(f"✓ Données chargées: {df.shape[0]} lignes, {df.shape[1]} colonnes")
         
-        # Détecter colonne de dates (spécifiquement "Période")
         if 'Période' in df.columns:
             print("✓ Colonne 'Période' détectée")
             
-            # Nettoyer la colonne Période avant conversion
-            # Supprimer les lignes où Période est vide ou non valide
             df = df.dropna(subset=['Période'])
-            df = df[df['Période'] != 'Période']  # Supprimer les doublons d'en-tête
+            df = df[df['Période'] != 'Période']  
             
             try:
-                # Convertir la colonne Période au format datetime
                 df['Période'] = pd.to_datetime(df['Période'], format='%Y-%m', errors='coerce')
-                # Supprimer les lignes où la conversion a échoué
                 df = df.dropna(subset=['Période'])
                 df.set_index('Période', inplace=True)
                 print(f"✓ Index temporel: {df.index[0].strftime('%Y-%m')} à {df.index[-1].strftime('%Y-%m')}")
@@ -39,7 +33,6 @@ def load_data(file_path="data/donnees_mergees_complet.csv"):
                 print(f"Erreur conversion dates: {e}")
                 print("✓ Conservation de l'index numérique")
         else:
-            # Chercher d'autres colonnes de dates
             date_cols = [col for col in df.columns if any(word in col.lower() 
                         for word in ['date', 'time', 'periode'])]
             
@@ -54,7 +47,6 @@ def load_data(file_path="data/donnees_mergees_complet.csv"):
             else:
                 print("ℹ Aucune colonne de dates détectée")
         
-        # Garder seulement les colonnes numériques
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         df = df[numeric_cols]
         
@@ -78,12 +70,10 @@ def clean_data(df):
     """
     print("Nettoyage des données...")
     
-    # Traiter les valeurs manquantes
     if df.isnull().any().any():
         print("⚠ Valeurs manquantes détectées - interpolation appliquée")
         df = df.interpolate().fillna(method='bfill').fillna(method='ffill')
     
-    # Traiter les outliers (méthode IQR)
     for col in df.columns:
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
