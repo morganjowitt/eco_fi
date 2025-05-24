@@ -1,4 +1,4 @@
-Projet d'économétrie financière 
+#Projet d'économétrie financière 
 
 Pour lancer le script main.py :
  -installer les dépendances contenues dans le fichier texte requirements.txt :
