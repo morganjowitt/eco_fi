@@ -55,7 +55,7 @@ pip install -r requirements.txt
 ```
 
 ## 👥 Authors
-- [Aya MOKHTAR](https://github.com/ayamokhtar)
+- [Aya Mokhtar](https://github.com/ayamokhtar)
 - [Morgan Jowitt](https://github.com/morganjowitt)
 - [Gaétan Dumas](https://github.com/gaetan250)
 - [Pierre Liberge](https://github.com/pierreliberge)
