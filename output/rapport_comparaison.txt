@@ -5,20 +5,20 @@ Nombre d'observations: 604
 Variables analysées: ['Climat_Affaires', 'Taux_Chomage', 'Indice_Prix_Conso', 'Indicateur_production_indus', 'Taux_10ans_FR']
 
 RÉSULTATS KALMAN/DFM:
-✓ Succès: Oui
-✓ Log-vraisemblance: -1867.64
-✓ AIC: 3773.28
-✓ BIC: 3856.94
+Succès: Oui
+Log-vraisemblance: -1867.64
+AIC: 3773.28
+BIC: 3856.94
 
 RÉSULTATS ACP:
-✓ Succès: Oui
-✓ Variance expliquée facteur 1: 0.521
-✓ Variance expliquée facteur 2: 0.225
-✓ Variance totale expliquée: 0.745
+Succès: Oui
+Variance expliquée facteur 1: 0.521
+Variance expliquée facteur 2: 0.225
+Variance totale expliquée: 0.745
 
 COMPARAISON:
-✓ Corrélation moyenne Kalman: 0.548
-✓ Corrélation moyenne ACP: 0.676
-✓ Corrélation entre facteurs: 0.879
+Corrélation moyenne Kalman: 0.548
+Corrélation moyenne ACP: 0.676
+Corrélation entre facteurs: 0.879
 
 RECOMMANDATION: ACP (corrélations plus fortes ou plus stable)
